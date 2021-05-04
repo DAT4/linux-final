@@ -1,0 +1,11 @@
+[Unit]
+Description=Restart every 10 minutes
+Requires=firewall.service
+
+[Timer]
+Unit=firewall.service
+OnCalendar=*:0/10
+Persistent=true
+
+[Install]
+WantedBy=timers.target

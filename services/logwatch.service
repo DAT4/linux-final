@@ -1,0 +1,10 @@
+[Unit]
+Description=firewall service
+
+[Service]
+Type=simple
+RemainAfterExit=true
+ExecStart=/root/bin/firewall.sh run
+
+[Install]
+WantedBy=multi-user.target

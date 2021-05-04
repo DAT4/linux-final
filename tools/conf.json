@@ -1,0 +1,7 @@
+{
+	"out":"here.txt",
+	"process": [
+		"sshd",
+		"docker"
+	]
+}
