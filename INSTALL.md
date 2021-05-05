@@ -20,6 +20,20 @@ systemctl disable SuSefirewall2
 systemctl start sshd 
 systemctl enable sshd
 ```
+### Update the system
+```
+zypper update
+zypper install zsh 	# for nicer shell
+zypper install vim-data # for syntax in vim
+```
+
+### Create users and make them sudo
+
+```
+useradd {USERNAME} -m -s /bin/zsh -g wheel
+passwd {USERNAME}
+```
+
 
 ## DHCPD
 
