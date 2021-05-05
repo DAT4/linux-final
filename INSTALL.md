@@ -34,6 +34,12 @@ useradd {USERNAME} -m -s /bin/zsh -g wheel
 passwd {USERNAME}
 ```
 
+### Change hostname 
+
+```
+echo "t10g1" > etc/hostname
+```
+
 
 ## DHCPD
 
