@@ -1,10 +1,9 @@
 [Unit]
-Description=firewall service
+Description=logwatcher service
 
 [Service]
 Type=simple
-RemainAfterExit=true
-ExecStart=/root/bin/firewall.sh run
+ExecStart=/root/bin/logwatcher
 
 [Install]
 WantedBy=multi-user.target

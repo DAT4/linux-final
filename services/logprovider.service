@@ -1,10 +1,10 @@
 [Unit]
-Description=firewall service
+Description=logprovider service
 
 [Service]
 Type=simple
 RemainAfterExit=true
-ExecStart=/root/bin/firewall.sh run
+ExecStart=/root/bin/logprovider.sh
 
 [Install]
 WantedBy=multi-user.target
