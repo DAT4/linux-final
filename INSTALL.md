@@ -40,6 +40,14 @@ passwd {USERNAME}
 echo "t10g1" > etc/hostname
 ```
 
+### Optimize reboot speed
+1. Power off the host and remove the susecd from hosts
+2. Go to edit `/boot/grub2/grub.cfg`
+3. Find all the timeouts and set them to 0
+
+```sh
+set timeout=0
+```
 
 ## DHCPD
 
