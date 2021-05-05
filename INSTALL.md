@@ -8,6 +8,19 @@
 6. Install Docker
 7. Docker pull mitmproxy/mitmproxy
 
+## Post installation
+After the installation its important to do a few configurations
+### Disable default firewall
+```
+systemctl stop SuSefirewall2
+systemctl disable SuSefirewall2
+```
+### Enable SSH
+```
+systemctl start sshd 
+systemctl enable sshd
+```
+
 ## DHCPD
 
 to install dhcpd then install dhcp server
