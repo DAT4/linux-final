@@ -14,7 +14,7 @@ import (
 
 type attributes struct {
 	Username string
-	Password string
+	KeyFile  string
 	Server   host
 	Local    host
 	Remote   host
@@ -65,17 +65,34 @@ func forward(localConn net.Conn, config *ssh.ClientConfig, a attributes) {
 	}()
 }
 
+func getKey(path string) (key []byte, err error) {
+	return ioutil.ReadFile(path)
+}
+
 func main() {
 	attrs, err := NewConf()
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	var hostKey ssh.PublicKey
+
+	key, err := getKey(attrs.KeyFile)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	signer, err := ssh.ParsePrivateKey(key)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	config := &ssh.ClientConfig{
-		User:            attrs.Username,
-		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
+		User: attrs.Username,
 		Auth: []ssh.AuthMethod{
-			ssh.Password(attrs.Password),
+			ssh.PublicKeys(signer),
 		},
+		HostKeyCallback: ssh.FixedHostKey(hostKey),
 	}
 
 	// Setup localListener (type net.Listener)

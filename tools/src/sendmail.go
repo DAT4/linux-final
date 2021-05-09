@@ -1,14 +1,36 @@
 package main
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
-	"ioutil"
+	"io/ioutil"
 	"log"
 	"net/smtp"
 	"os"
+	"strconv"
 )
 
+type config struct {
+	smtpserver host
+	from       string
+	to         []string
+}
+
+type host struct {
+	ip   string
+	port int
+}
+
+func (h *host) String() string {
+	return h.ip + ":" + strconv.Itoa(h.port)
+}
+
 func main() {
+	conf, err := NewConf()
+	if err != nil {
+		log.Fatalf("Loading mail config file failed: %v", err)
+	}
 	if len(os.Args) == 1 {
 		log.Fatal("no path provided")
 	}
@@ -17,15 +39,17 @@ func main() {
 		log.Fatal(err)
 	}
 
-	c, err := smtp.Dial("localhost:1025")
+	c, err := smtp.Dial(conf.smtpserver.String())
 	if err != nil {
 		log.Fatal(err)
 	}
-	if err := c.Mail("linux@dtu.dk"); err != nil {
+	if err := c.Mail(conf.from); err != nil {
 		log.Fatal(err)
 	}
-	if err := c.Rcpt("mail@mama.sh"); err != nil {
-		log.Fatal(err)
+	for _, rcpt := range conf.to {
+		if err := c.Rcpt(rcpt); err != nil {
+			log.Fatal(err)
+		}
 	}
 	wc, err := c.Data()
 	if err != nil {
@@ -43,4 +67,14 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func NewConf() (c config, err error) {
+	confPath := os.Getenv("MAIL_CONF")
+	if confPath == "" {
+		return c, errors.New("no config file provided")
+	}
+	data, err := ioutil.ReadFile(confPath)
+	err = json.Unmarshal(data, &c)
+	return
 }
