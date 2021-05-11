@@ -15,6 +15,11 @@ After the installation its important to do a few configurations
 systemctl stop SuSefirewall2
 systemctl disable SuSefirewall2
 ```
+### Disable wicked
+```
+systemctl stop wicked
+systemctl disable wicked
+```
 ### Enable SSH
 ```
 systemctl start sshd 
