@@ -1,0 +1,13 @@
+[Unit]
+Description=network management service
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/ssh -N backend
+RestartSec=5
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+

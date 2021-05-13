@@ -1,0 +1,10 @@
+[Unit]
+Description=Callback to parent to start subservers
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/ssh parent bash -c /root/bin/startsubservers.sh
+
+[Install]
+WantedBy=multi-user.target

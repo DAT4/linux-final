@@ -1,0 +1,14 @@
+[Unit]
+Description=network management service
+After=local-fs.target
+Before=network.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/root/bin/network.sh start
+ExecStop=/root/bin/network.sh stop
+ExecReload=/root/bin/network.sh restart
+
+[Install]
+WantedBy=multi-user.target
