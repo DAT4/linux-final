@@ -50,6 +50,10 @@ echo "t10g1" > etc/hostname
 2. Go to edit `/boot/grub2/grub.cfg`
 3. Find all the timeouts and set them to 0
 
+```sh
+set timeout=0
+```
+
 ### Seccure SSH
 Go to `/etc/ssh/sshd_config` and set these values
 ```
@@ -57,9 +61,6 @@ PermitRootLogin no
 PasswordAuthentication no
 ```
 
-```sh
-set timeout=0
-```
 
 ## DHCPD
 

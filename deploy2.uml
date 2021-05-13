@@ -1,0 +1,95 @@
+@startuml
+skinparam linetype ortho
+
+node backendServer {
+}
+cloud internet {
+}
+
+	component x270 {
+	}
+	component "x238-528" as r4{
+	}
+node Server18 {
+	component "eth0.100" as vlan {
+	} 
+	component eth0 {
+	}
+	component eth1 {
+	}
+	component br0 {
+	}
+	component br1 {
+	}
+	component br2 {
+	}
+		node Server29 {
+			component eth0 as leth0 {
+			}
+			component eth1 as leth1 {
+			}
+			component eth2 as leth2 {
+			}
+		}
+		node arch1 {
+			component eth0 as arch1eth0 {
+			}
+			node docker {
+				card mitmproxy {
+				}
+			}
+		}
+		node ubu1 {
+			component eth0 as ubu1eth0 {
+			}
+		}
+		node ubu2 {
+			component eth0 as ubu2eth0 {
+			}
+			node docker as ubudocker{
+				card dendrite {
+				}
+				card "element web" as elweb {
+				}
+				card gittea {
+				}
+			} 
+		}
+}
+
+node martinUbuntu<&person> as mubu01 {
+	component eth0 as mubueth0 {
+	}
+}
+node ranUbuntu<&person>  as rubu01 {
+	component eth0 as rubueth0 {
+	}
+}
+
+internet - x270
+x270 -- br0
+br2 - vlan 
+br2 - leth2  : 10.100.0.1/24
+br1 - ubu1eth0 : 192.168.169.101/24
+br2 -- ubu2eth0 : 10.100.0.101/24
+
+br1 -- r4
+r4 --- mubueth0  : 192.168.169.102/24
+rubueth0 --- r4  : 192.168.169.103/24
+
+leth1 . leth0
+leth0 .. leth2
+
+br0 -- eth0: 192.168.150.18/25
+arch1eth0 -- br0: 192.168.150.30/25
+arch1eth0 . mitmproxy
+eth1 -- br1
+br0 -- leth0: 192.168.150.29/25
+br1 -- leth1 : 192.168.169.1/24
+internet -- backendServer 
+ubu2eth0 .. elweb 
+ubu2eth0 .. dendrite
+ubu2eth0 .. gittea 
+
+@enduml
+
