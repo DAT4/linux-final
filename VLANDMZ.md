@@ -22,12 +22,12 @@ Now we want to login to the server on `130.225.170.70` and create a similar user
 
 so first we add the user:
 ```
-useradd -m netwk
+useradd -m linux
 ```
 
 then we add the config to the end of `sshd_config`:
 ```
-Match user netwk
+Match user linux
     ForceCommand echo 'hello fello'
     PasswordAuthentication no
     AllowTcpForwarding yes
@@ -37,23 +37,24 @@ We will allow localhost on port 443 since this is also the port we expose from t
 
 Now we want to automate the action of forwarding so we need to authenticate ourselves with an ssh key instead of writing password
 
-Now we create a ssh key for the user on `ubu1`
+Now we create a ssh key pair for the user on `ubu1` and put them in `etc/server/ssh_keys/`
 
 ```
 ssh-keygen -t rsa -b 2048
 ```
 
-and manually copy the key to the `jumper` accout on `server29` and the `netwk` account on `130.225.170.70`. (we cannot copy it with `ssh-copy-id` because of the `ForceCommand` we made in the `sshd_config`'s)
+and manually copy the key to the `jumper` accout on `server29` and the `linux` account on `130.225.170.70`. (we cannot copy it with `ssh-copy-id` because of the `ForceCommand` we made in the `sshd_config`'s)
 
-Then we will create a ssh config file for the user on `ubu1` in `~/.ssh/config` with the following content
+Then we will edit ssh client config file on `ubu1` in `/etc/ssh/ssh_config` and add the following content to the end:
 
 ```
 Host parent
 	User jumper
 	Hostname 10.100.0.1
+	IdentityFile /etc/server/ssh_keys/id_rsa
 
 Host backend
-	User netwk
+	User linux
 	Hostname 130.225.170.70
 	port 22022
 	ProxyJump parent
@@ -62,6 +63,7 @@ Host backend
 	RemoteForward 8082 localhost:8082
 	RemoteForward 8083 localhost:8083
 	RemoteForward 8084 localhost:8084
+	IdentityFile /etc/server/ssh_keys/id_rsa
 ```
 
 This means that we have an alias `parent` which is linking to `server29` and and alias backend which is using `parent` as a proxy and forwarding a range of ports from `ubu1` to the host on `130.225.170.70`
@@ -73,3 +75,78 @@ ssh -N backend
 ```
 
 `-N` means we will not ask to get a shell
+
+So now we can add this to a service file so we can have persistent port forwarding.
+
+## forwarding service
+
+Lets create a file `/etc/systemd/system/server.service` with the following content:
+
+```
+[Unit]
+Description=Ssh forwarding service
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/ssh -N backend
+RestartSec=5
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
+
+then we can restart `systemd` 
+
+```
+systemctl daemon-reload
+```
+
+and because we are using known hosts to avoid dns spoofing attacks, then we need to login as root one time and write `yes` to accept the host. Or else the `systemd` service will never start forwading ports.
+
+as root
+```
+ssh backend
+```
+
+and then enable and start the service
+
+```
+systemctl enable server
+systemctl start server
+```
+
+we can now check if it works by either checking journalctl for a big pinguin
+
+```
+journalctl -xeu server
+```
+
+it should look like this
+```
+May 13 10:06:40 ubu2 ssh[1444]: ********************************************
+May 13 10:06:40 ubu2 ssh[1444]: WELCOME TO Group4 BACKEND SERVER
+May 13 10:06:40 ubu2 ssh[1444]: ********************************************
+May 13 10:06:40 ubu2 ssh[1444]:          _nnnn_
+May 13 10:06:40 ubu2 ssh[1444]:         dGGGGMMb     ,"""""""""""""".
+May 13 10:06:40 ubu2 ssh[1444]:        @p~qp~~qMb    | Linux Rules! |
+May 13 10:06:40 ubu2 ssh[1444]:        M|@||@) M|   _;..............'
+May 13 10:06:40 ubu2 ssh[1444]:        @,----.JM| -'
+May 13 10:06:40 ubu2 ssh[1444]:       JS^\__/  qKL
+May 13 10:06:40 ubu2 ssh[1444]:      dZP        qKRb
+May 13 10:06:40 ubu2 ssh[1444]:     dZP          qKKb
+May 13 10:06:40 ubu2 ssh[1444]:    fZP            SMMb
+May 13 10:06:40 ubu2 ssh[1444]:    HZM            MMMM
+May 13 10:06:40 ubu2 ssh[1444]:    FqM            MMMM
+May 13 10:06:40 ubu2 ssh[1444]:  __| ".        |\dS"qML
+May 13 10:06:40 ubu2 ssh[1444]:  |    `.       | `' \Zq
+May 13 10:06:40 ubu2 ssh[1444]: _)      \.___.,|     .'
+May 13 10:06:40 ubu2 ssh[1444]: \____   )MMMMMM|   .'
+May 13 10:06:40 ubu2 ssh[1444]:      `-'       `--' hjm
+```
+
+or we can also login to the backend server and check if the ports are open with
+```
+ssh -tlpn
+```
