@@ -1,6 +1,8 @@
 # Final Assignment
 Written by Martin Maartensson
 
+[attachments and a more readable markdown on github](https://github.com/dat4/linux-final) << this is a link
+
 # The System
 We have set up 3 images on Nebula, one "baseVM" (Server 18) and then 2 individual VM's, then we have created a whole environment of VM's inside the baseVM where we are managing the network from one of the internal VM's (Server 29). 
 
