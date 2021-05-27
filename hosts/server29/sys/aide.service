@@ -1,0 +1,12 @@
+[Unit]
+Description=Aide HIDS
+After=network.target
+OnFailure=status_email_martin@%n.service
+
+[Service]
+Type=simple
+ExecStart=/root/bin/aide.sh
+
+[Install]
+WantedBy=multi-user.target
+

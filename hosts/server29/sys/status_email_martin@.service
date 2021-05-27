@@ -1,0 +1,8 @@
+[Unit]
+Description=status email for %i to martin
+
+[Service]
+Type=oneshot
+ExecStart=/root/bin/systemd-email.sh s195469@student.dtu.dk %i
+User=root
+Group=systemd-journal

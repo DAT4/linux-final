@@ -1,0 +1,10 @@
+[Unit]
+Description=rsync backup service
+OnFailure=status_email_martin@%n.service
+
+[Service]
+Type=simple
+ExecStart=/root/bin/rsync.sh
+
+[Install]
+WantedBy=multi-user.target
