@@ -36,6 +36,7 @@ start)
 
     #Allow Ping
     iptables -A INPUT -p icmp -m icmp --icmp-type 8 -j ACCEPT
+    iptables -A OUTPUT -p icmp -m icmp --icmp-type 8 -j ACCEPT
 
     # ALLOW DNS
     iptables -A OUTPUT -p udp --sport 53 -j ACCEPT
@@ -86,10 +87,6 @@ stop)
     iptables -X
 
     ;;
-restart)
-        $0 stop
-        $0 start
-    ;;
 *)
-    echo "Usage $0 [start|stop|restart]"
+    echo "Usage $0 [start|stop]"
 esac

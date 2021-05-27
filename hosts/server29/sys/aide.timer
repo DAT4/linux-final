@@ -1,8 +1,8 @@
 [Unit]
-Description="Restart aide every 10 minutes"
+Description="Restart aide every hour"
 
 [Timer]
-OnCalendar=*:0/10
+OnCalendar=hourly
 Persistent=true
 
 [Install]

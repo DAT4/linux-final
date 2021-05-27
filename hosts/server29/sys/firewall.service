@@ -5,8 +5,6 @@ OnFailure=status_email_martin@%n.service
 [Service]
 Type=simple
 ExecStart=/root/bin/firewall.sh start
-ExecStop=/root/bin/firewall.sh stop
-ExecReload=/root/bin/firewall.sh restart
 
 [Install]
 WantedBy=multi-user.target

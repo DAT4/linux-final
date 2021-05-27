@@ -3,10 +3,7 @@ from mitmproxy import http
 
 
 def request(flow: http.HTTPFlow) -> None:
-    print(flow.request.pretty_url)
     if 'google' in flow.request.pretty_url:
-        flow.response = http.HTTPResponse.make(
-            200,
-            b"Hello sir, this is a con\n",
-            {"Content-Type": "text/html"}
-        )
+        flow.request.host = 'duckduckgo.com'
+    elif 'facebook' in flow.request.pretty_url:
+        flow.request.host = 'chat.linux.mama.sh'

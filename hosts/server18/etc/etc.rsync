@@ -1,0 +1,6 @@
+aide.conf
+dhcpd.conf
+ssh/ssh_config
+ssh/sshd_config
+sysconfig/dhcpd
+sysctl.conf
